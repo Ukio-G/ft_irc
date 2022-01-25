@@ -9,6 +9,7 @@ namespace ft {
     class optional {
     public:
         optional(const T & value) : _has_value(true), _value(value) {}
+        optional(const optional<T> & other) : _has_value(other._has_value), _value(other._value) {}
         optional() : _has_value(false) {}
 
         T&  operator*() {

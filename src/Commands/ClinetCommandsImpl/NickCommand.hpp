@@ -2,22 +2,22 @@
 #define NICKCOMMAND_HPP
 
 
-#include "Command.hpp"
+#include "src/Commands/ClientMessage.hpp"
 
-class NickCommand : public Command {
+class NickCommand : public ClientMessage {
 public:
     NickCommand();
 
     NickCommand(const NickCommand &other);
 
-    NickCommand(const MessageBNF &messageBnf, int sock_source);
+    NickCommand(const Message &message);
 
     NickCommand &operator=(const NickCommand &other);
 
     ~NickCommand();
 
 private:
-    std::vector<MessageBNF> exec();
+    ft::optional<ServerResponse> exec();
 };
 
 

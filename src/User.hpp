@@ -43,9 +43,10 @@ public:
     void setAuthorized(bool authorized);
 
     std::string generateFullUsername() {
-        return ":" + nick + ":~u@" + host;
+        return nick + "!"+ userName +"@" + host;
     }
 
+    operator int();
     ~User();
 
 private:
@@ -56,7 +57,11 @@ private:
     std::string host;
     int mode;
     bool authorized;
+    bool is_operator;
+public:
+    bool isOperator() const;
 
+    void setIsOperator(bool isOperator);
 };
 
 

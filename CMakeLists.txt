@@ -5,7 +5,7 @@ include_directories(. utils)
 
 set(CMAKE_CXX_STANDARD 98)
 
-add_executable(SocketServer src/main.cpp src/SocketServer.cpp src/SocketServer.hpp src/ApplicationData.cpp src/User.cpp utils/utils.cpp src/Commands/Command.cpp
+add_executable(SocketServer src/main.cpp src/Server/SocketServer.cpp src/Server/SocketServer.hpp src/ApplicationData.cpp src/User.cpp utils/utils.cpp src/Commands/ClientMessage.cpp
         src/Commands/CommandsHandler.cpp
-        src/Commands/CapCommand.cpp
-        src/Commands/CommandFactory.cpp src/Commands/CommandFactory.hpp src/Commands/PassCommand.cpp src/Commands/PassCommand.hpp src/Commands/UserCommand.cpp src/Commands/UserCommand.hpp src/Commands/NickCommand.cpp src/Commands/NickCommand.hpp utils/optional.hpp src/Commands/PingCommand.cpp src/Commands/PingCommand.hpp)
+        src/Commands/ClinetCommandsImpl/CapCommand.cpp
+        src/Commands/CommandFactory.cpp src/Commands/CommandFactory.hpp src/Commands/ClinetCommandsImpl/PassCommand.cpp src/Commands/ClinetCommandsImpl/PassCommand.hpp src/Commands/ClinetCommandsImpl/UserCommand.cpp src/Commands/ClinetCommandsImpl/UserCommand.hpp src/Commands/ClinetCommandsImpl/NickCommand.cpp src/Commands/ClinetCommandsImpl/NickCommand.hpp utils/optional.hpp src/Commands/ClinetCommandsImpl/PingCommand.cpp src/Commands/ClinetCommandsImpl/PingCommand.hpp src/Commands/ClinetCommandsImpl/ServStopCommand.cpp src/Commands/ClinetCommandsImpl/ServStopCommand.hpp src/Message/Message.cpp src/Message/Message.hpp src/Message/MessageBNF.cpp src/Message/MessageBNF.hpp src/Server/ServerResponse.cpp src/Server/ServerResponse.hpp src/Server/ServerStatus.cpp src/Server/ServerStatus.hpp)

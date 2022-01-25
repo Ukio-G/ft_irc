@@ -20,4 +20,10 @@ namespace ft {
             result.push_back(s);
         return result;
     }
+
+    std::string to_string(int num) {
+        std::stringstream f;
+        f << num;
+        return f.str();
+    }
 }

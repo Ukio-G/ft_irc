@@ -5,33 +5,42 @@
 #include <src/ApplicationData.hpp>
 #include "CommandsHandler.hpp"
 
-CommandsHandler::CommandsHandler() : m_cap_lock(false) {}
+CommandsHandler::CommandsHandler() { }
 
-CommandsHandler::~CommandsHandler() {
-}
+CommandsHandler::~CommandsHandler() { }
 
-void CommandsHandler::popCommand() {
+
+/**
+ * Exec one command from client. Can produse zero, one, or multiply server responses
+ * @param cmd_it
+ */
+void CommandsHandler::execCommand(std::deque<ClientMessage::Ptr>::iterator cmd_it) {
     ApplicationData::Ptr app_data = ApplicationData::instance();
 
-    Command::Ptr cmd = app_data->commandQueue.front();
-    app_data->commandQueue.pop_front();
+    ft::optional<ServerResponse> cmd_result = (*cmd_it)->exec();
+    if (cmd_result)
+        app_data->server->Write(cmd_result.value());
 
-    std::vector<MessageBNF> cmd_result = cmd->exec();
-    for (int i = 0; i < cmd_result.size(); ++i)
-        app_data->server->WriteStr(cmd_result[i], cmd->getMSockSource());
-
+    // std::deque<ClientMessage::Ptr> & cmd_queue = app_data->commandQueue;
 }
 
 void CommandsHandler::handleCommands() {
     ApplicationData::Ptr app_data = ApplicationData::instance();
-    while (!m_cap_lock) {
-        popCommand();
-        if (app_data->commandQueue.empty())
-            return;
-    }
-}
 
-void CommandsHandler::capUnlock() {
-    m_cap_lock = false;
+    typedef std::deque<ClientMessage::Ptr>::iterator cmdIt;
+
+    for (cmdIt it = app_data->commandQueue.begin() ; it != app_data->commandQueue.end(); ) {
+        const Message & msg = it->get()->m_message;
+        int from = msg.m_from;
+        if (app_data->lockedCap.find(from) != app_data->lockedCap.end()) {
+            if (msg.messageBnf.command != "CAP") {
+                it++;
+                continue;
+            }
+        }
+        execCommand(it);
+        it = app_data->commandQueue.erase(it);
+    }
+
 }
 

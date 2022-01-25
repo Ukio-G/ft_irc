@@ -2,21 +2,21 @@
 #define USERCOMMAND_HPP
 
 
-#include "Command.hpp"
+#include "src/Commands/ClientMessage.hpp"
 
-class UserCommand : public Command {
+class UserCommand : public ClientMessage {
 public:
     UserCommand();
 
     UserCommand(const UserCommand &other);
 
-    UserCommand(const MessageBNF &messageBnf, int sock_source);
+    UserCommand(const Message &message);
 
     UserCommand &operator=(const UserCommand &other);
 
     ~UserCommand();
 
-    std::vector<MessageBNF> exec();
+    ft::optional<ServerResponse> exec();
 private:
 };
 

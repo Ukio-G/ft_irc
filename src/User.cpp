@@ -90,3 +90,15 @@ void User::setAuthorized(bool authorized) {
     User::authorized = authorized;
 }
 
+User::operator int() {
+    return sock_fd;
+}
+
+bool User::isOperator() const {
+    return is_operator;
+}
+
+void User::setIsOperator(bool isOperator) {
+    is_operator = isOperator;
+}
+

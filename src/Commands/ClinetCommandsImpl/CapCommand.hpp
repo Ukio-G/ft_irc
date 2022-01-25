@@ -5,24 +5,25 @@
 #ifndef CAPCOMMAND_HPP
 #define CAPCOMMAND_HPP
 
-#include "Command.hpp"
+#include "src/Commands/ClientMessage.hpp"
 
-class CapCommand : public Command {
+class CapCommand : public ClientMessage {
 public:
+
     typedef ft::shared_ptr<CapCommand> Ptr;
 
     CapCommand();
 
     CapCommand(const CapCommand &other);
 
-    CapCommand(const MessageBNF & messageBnf, int sock_source);
+    CapCommand(const Message & msg);
 
     CapCommand &operator=(const CapCommand &other);
 
     ~CapCommand();
 
 private:
-    std::vector<MessageBNF> exec();
+    ft::optional<ServerResponse> exec();
 };
 
 

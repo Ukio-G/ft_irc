@@ -6,7 +6,7 @@
 #define COMMANDFACTORY_HPP
 
 
-#include "Command.hpp"
+#include "ClientMessage.hpp"
 
 class CommandFactory {
 public:
@@ -16,10 +16,7 @@ public:
 
     ~CommandFactory();
 
-    Command::Ptr createCommand(const std::pair<std::string, int> &clientMessage);
-
-private:
-
+    ClientMessage::Ptr createCommand(const Message &msg);
 };
 
 

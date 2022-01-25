@@ -1,6 +1,6 @@
 #include <iostream>
 #include <cstdlib>
-#include "SocketServer.hpp"
+#include "src/Server/SocketServer.hpp"
 #include "ApplicationData.hpp"
 int main(int argc, char *argv[]) {
 

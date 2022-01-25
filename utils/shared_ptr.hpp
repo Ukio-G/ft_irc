@@ -28,7 +28,17 @@ namespace ft {
             return &(operator*());
         }
 
+        const T* operator->() const {
+            return &(operator*());
+        }
+
         T& operator*() {
+            if (!_data)
+                throw std::runtime_error("Tru dereference null smart pointer");
+            return *_data;
+        }
+
+        const T& operator*() const {
             if (!_data)
                 throw std::runtime_error("Tru dereference null smart pointer");
             return *_data;

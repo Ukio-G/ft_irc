@@ -7,13 +7,9 @@ public:
 
     ~CommandsHandler();
 
-    void popCommand();
-private:
-    bool m_cap_lock;
-public:
-    void capUnlock();
-
     void handleCommands();
+
+    void execCommand(std::deque<ClientMessage::Ptr>::iterator cmd_it);
 };
 
 
