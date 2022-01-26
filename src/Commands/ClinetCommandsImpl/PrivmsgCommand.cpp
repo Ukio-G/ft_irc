@@ -25,7 +25,13 @@ Message PrivmsgCommand::messageToUser(const std::string & receiverUser) {
         //TODO: Handle no such user
     }
 
-    Message msg(":" + m_message.m_from->generateFullUsername() + " PRIVMSG " + receiverUser + " " + m_message.messageBnf.arguments.back(), *to_opt);
+
+    std::string msg_str = ":" + m_message.m_from->generateFullUsername() + " PRIVMSG " + receiverUser;
+
+    for (int i = 1; i < m_message.messageBnf.arguments.size(); ++i)
+        msg_str += m_message.messageBnf.arguments[i] + " ";
+    
+    Message msg( msg_str, *to_opt);
     return msg;
 }
 
@@ -39,7 +45,10 @@ std::vector<Message> PrivmsgCommand::messageToChannel(const std::string & receiv
         //TODO: Handle no such channel
     }
 
-    std::string msg_str = "PRIVMSG #" + channel+ " " + m_message.messageBnf.arguments.back();
+    std::string msg_str = "PRIVMSG #" + channel + " ";//  + m_message.messageBnf.arguments.back();
+
+    for (int i = 1; i < m_message.messageBnf.arguments.size(); ++i)
+        msg_str += m_message.messageBnf.arguments[i] + " ";
 
     result = channelIt->second->generateMessage(msg_str, m_message.m_from, true);
 
