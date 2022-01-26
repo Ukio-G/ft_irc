@@ -1,11 +1,6 @@
-//
-// Created by ukio on 1/25/22.
-//
-
 #include <src/ApplicationData.hpp>
 #include "ServerStatus.hpp"
 #include <cstdlib>
-#include <stdlib.h>
 #include <utils.hpp>
 
 ServerStatus::ServerStatus() {}
@@ -19,35 +14,22 @@ ServerStatus &ServerStatus::operator=(const ServerStatus &other) {
     return *this;
 }
 
-ServerStatus::~ServerStatus() {
-
-}
+ServerStatus::~ServerStatus() { }
 
 Message ServerStatus::getReplyMessage(ServerStatus::Reply reply, User::Ptr to) {
     switch (reply) {
         case RPL_LUSERCLIENT:
             return rpl_luserclient(to);
-            break;
         case RPL_LUSEROP:
-        {
-
-        }
-            break;
+            return rpl_luserop(to);
         case RPL_LUSERUNKNOWN:
-        {
-
-        }
-            break;
+            return rpl_luserunknown(to);
         case RPL_LUSERCHANNELS:
-        {
-
-        }
-            break;
+            return rpl_luserchannels(to);
         case RPL_LUSERME:
-        {
-
-        }
-            break;
+            return rpl_luserme(to);
+        default:
+            throw std::runtime_error("Invalid reply number for ServerStatus logic");
     }
 }
 
@@ -56,7 +38,7 @@ Message ServerStatus::rpl_luserclient(User::Ptr to) {
     std::string server_name = app_data->serverName;
     size_t users_count = ApplicationData::instance()->users.size();
 
-    Message msg(":" + server_name + " 251 " + to->getNick() + "There are " + ft::to_string((int)users_count) + " users and 1 services on 1 servers", to);
+    Message msg(":" + server_name + " 251 " + to->getNick() + " :There are " + ft::to_string((int)users_count) + " users and 1 services on 1 servers", to);
     return msg;
 }
 
@@ -67,10 +49,12 @@ Message ServerStatus::rpl_luserop(User::Ptr to) {
 
     typedef std::map<int, User::Ptr>::iterator uIt;
 
-    for (uIt it = app_data->users.begin() ; it != app_data->users.end(); ) {
-        if (it->second->isOperator())
-            operators++;
-    }
+
+    //TODO: Fix inf. loop
+//    for (uIt it = app_data->users.begin() ; it != app_data->users.end(); ) {
+//        if (it->second->isOperator())
+//            operators++;
+//    }
 
     Message msg(":" + server_name + " 252 " + to->getNick() + " " + ft::to_string(operators)+ " :operator(s) online", to);
     return msg;
@@ -98,6 +82,6 @@ Message ServerStatus::rpl_luserme(User::Ptr to) {
     std::string server_name = app_data->serverName;
     size_t users_count = ApplicationData::instance()->users.size();
 
-    Message msg(":" + server_name + " 255 " + to->getNick() + "There are " + ft::to_string((int)users_count) + " users and 1 services on 1 servers", to);
+    Message msg(":" + server_name + " 255 " + to->getNick() + " :I have " + ft::to_string((int)users_count) + " clients and 1 servers", to);
     return msg;
 }

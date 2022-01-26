@@ -31,7 +31,7 @@ User &User::operator=(const User &other) {
 }
 
 User::~User() {
-
+    //TODO: Left all channels
 }
 
 int User::getSockFd() const {

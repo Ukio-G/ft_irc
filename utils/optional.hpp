@@ -4,12 +4,16 @@
 #include <stdexcept>
 
 namespace ft {
+    struct nullopt_t { };
+
+    static const nullopt_t nullopt = nullopt_t();
 
     template<class T>
     class optional {
     public:
         optional(const T & value) : _has_value(true), _value(value) {}
         optional(const optional<T> & other) : _has_value(other._has_value), _value(other._value) {}
+        optional(nullopt_t) : _has_value(false) {}
         optional() : _has_value(false) {}
 
         T&  operator*() {

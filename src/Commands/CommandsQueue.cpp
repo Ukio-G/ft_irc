@@ -3,28 +3,27 @@
 //
 
 #include <src/ApplicationData.hpp>
-#include "CommandsHandler.hpp"
+#include "CommandsQueue.hpp"
 
-CommandsHandler::CommandsHandler() { }
+CommandsQueue::CommandsQueue() { }
 
-CommandsHandler::~CommandsHandler() { }
+CommandsQueue::~CommandsQueue() { }
 
 
 /**
  * Exec one command from client. Can produse zero, one, or multiply server responses
  * @param cmd_it
  */
-void CommandsHandler::execCommand(std::deque<ClientMessage::Ptr>::iterator cmd_it) {
+void CommandsQueue::execCommand(std::deque<ClientMessage::Ptr>::iterator cmd_it) {
     ApplicationData::Ptr app_data = ApplicationData::instance();
 
     ft::optional<ServerResponse> cmd_result = (*cmd_it)->exec();
+
     if (cmd_result)
         app_data->server->Write(cmd_result.value());
-
-    // std::deque<ClientMessage::Ptr> & cmd_queue = app_data->commandQueue;
 }
 
-void CommandsHandler::handleCommands() {
+void CommandsQueue::handleCommands() {
     ApplicationData::Ptr app_data = ApplicationData::instance();
 
     typedef std::deque<ClientMessage::Ptr>::iterator cmdIt;

@@ -119,7 +119,7 @@ void SocketServer::Loop() {
             throw std::runtime_error("Poll error: "  + std::string(strerror(errno)));
         handleNewTcpConnection();
         handleExistingTcpConnection(ready - 1);
-        appdata->commandsHandler.handleCommands();
+        appdata->commandsQueue.handleCommands();
     }
     CloseAllConnection();
 }

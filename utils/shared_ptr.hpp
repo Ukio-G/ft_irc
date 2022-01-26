@@ -83,11 +83,34 @@ namespace ft {
             _data = 0;
             _ref_counter = 0;
         }
+
+        template<class U>
+        bool operator==(const shared_ptr<U> & other) {
+            return _data == other._data;
+        }
+
+        template<class U>
+        bool operator==(const shared_ptr<U> & other) const {
+            return _data == other._data;
+        }
+
+        template<class U>
+        bool operator!=(shared_ptr<U> & other) {
+            return _data != other._data;
+        }
+
+        template<class U>
+        bool operator!=(shared_ptr<U> & other) const {
+            return _data != other._data;
+        }
+
     private:
         T * _data;
         size_t * _ref_counter;
 
         void decrement_counter() {
+            if (!_ref_counter || !_data)
+                return;
             (*_ref_counter)--;
             if (_ref_counter == 0) {
                 delete _data;

@@ -43,5 +43,13 @@ ft::optional<ServerResponse> UserCommand::exec() {
 
     result.m_replies.push_back(welcome);
 
+    /* Send 25x messages after registration on server */
+    ServerStatus & status = app_data->serverStatus;
+    result.m_replies.push_back(status.getReplyMessage(ServerStatus::RPL_LUSERCLIENT, user));
+    result.m_replies.push_back(status.getReplyMessage(ServerStatus::RPL_LUSEROP, user));
+    result.m_replies.push_back(status.getReplyMessage(ServerStatus::RPL_LUSERUNKNOWN, user));
+    result.m_replies.push_back(status.getReplyMessage(ServerStatus::RPL_LUSERCHANNELS, user));
+    result.m_replies.push_back(status.getReplyMessage(ServerStatus::RPL_LUSERME, user));
+
     return result;
 }

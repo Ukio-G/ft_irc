@@ -3,6 +3,8 @@
 //
 
 #include "CommandFactory.hpp"
+#include <src/Commands/ClinetCommandsImpl/JoinCommand.hpp>
+#include <src/Commands/ClinetCommandsImpl/PrivmsgCommand.hpp>
 #include "src/Commands/ClinetCommandsImpl/CapCommand.hpp"
 #include "src/Commands/ClinetCommandsImpl/PassCommand.hpp"
 #include "src/Commands/ClinetCommandsImpl/NickCommand.hpp"
@@ -33,6 +35,10 @@ ClientMessage::Ptr CommandFactory::createCommand(const Message & msg) {
         result = new ServStopCommand(msg);
     if (messageBNF.command == "PING")
         result = new PingCommand(msg);
+    if (messageBNF.command == "JOIN")
+        result = new JoinCommand(msg);
+    if (messageBNF.command == "PRIVMSG")
+        result = new PrivmsgCommand(msg);
 
     return ClientMessage::Ptr(result);
 }

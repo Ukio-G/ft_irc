@@ -6,12 +6,13 @@
 #include <src/Commands/ClientMessage.hpp>
 #include <deque>
 #include <src/Commands/CommandFactory.hpp>
-#include <src/Commands/CommandsHandler.hpp>
+#include <src/Commands/CommandsQueue.hpp>
 #include <set>
+#include <src/Server/ServerStatus.hpp>
 #include "utils/shared_ptr.hpp"
 #include "User.hpp"
 #include "src/Server/SocketServer.hpp"
-#include "Channel.hpp"
+#include "IRCChannel.hpp"
 
 class ApplicationData {
 private:
@@ -25,16 +26,24 @@ public:
     typedef ft::shared_ptr<ApplicationData> Ptr;
     static ft::shared_ptr<ApplicationData> instance();
 
-    std::map<int, User::Ptr> users;
-    std::set<int> lockedCap; // Для данных sockFD заблокировано
-
-    std::deque<ClientMessage::Ptr> commandQueue;
-    std::vector<Channel> channels;
-    CommandFactory factory;
-    CommandsHandler commandsHandler;
-    SocketServer * server;
     std::string password;
     std::string serverName;
+
+    /* Internal logic's data */
+    std::set<int> lockedCap; /* Clients waiting CAP END message */
+    std::deque<ClientMessage::Ptr> commandQueue; // TODO: move to CommandsQueue logic with incapsulate append new commands
+    std::map<std::string, IRCChannel::Ptr> channels;
+    std::map<int, User::Ptr> users; /* SocketFD (client connection identifier) to User::Ptr */
+
+    /* Logics */
+    SocketServer * server;
+    ServerStatus serverStatus;
+    CommandFactory factory;
+    CommandsQueue commandsQueue;
+
+    /* Request to find data */
+    static ft::optional<User::Ptr> getUserByNick(const std::string & nick);
+
 };
 
 #endif

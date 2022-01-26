@@ -46,10 +46,10 @@ public:
         return nick + "!"+ userName +"@" + host;
     }
 
-    operator int();
     ~User();
 
 private:
+    operator int();
     int sock_fd;
     std::string nick;
     std::string userName;
