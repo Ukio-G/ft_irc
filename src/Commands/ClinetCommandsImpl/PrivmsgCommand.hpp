@@ -1,7 +1,3 @@
-//
-// Created by ukio on 1/26/22.
-//
-
 #ifndef PRIVMSGCOMMAND_HPP
 #define PRIVMSGCOMMAND_HPP
 

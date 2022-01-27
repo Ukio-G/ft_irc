@@ -36,5 +36,18 @@ ft::optional<User::Ptr> ApplicationData::getUserByNick(const std::string & nick)
     return ft::nullopt;
 }
 
+std::vector<IRCChannel::Ptr> ApplicationData::userChannels(User::Ptr user) {
+    std::vector<IRCChannel::Ptr> result;
+    ApplicationData::Ptr app_data = ApplicationData::instance();
+    typedef std::map<std::string, IRCChannel::Ptr>::iterator chIt;
+
+    for (chIt it = app_data->channels.begin(); it != app_data->channels.end() ; it++) {
+        if (it->second->isUserAvailable(user))
+            result.push_back(it->second);
+    }
+
+    return result;
+}
+
 
 

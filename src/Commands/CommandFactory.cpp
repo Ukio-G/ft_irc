@@ -1,15 +1,14 @@
-//
-// Created by ukio on 1/24/22.
-//
-
 #include "CommandFactory.hpp"
 #include <src/Commands/ClinetCommandsImpl/JoinCommand.hpp>
 #include <src/Commands/ClinetCommandsImpl/PrivmsgCommand.hpp>
+#include <src/Commands/ClinetCommandsImpl/OperCommand.hpp>
+#include <src/Commands/ClinetCommandsImpl/KickCommand.hpp>
+#include <src/Commands/ClinetCommandsImpl/QuitCommand.hpp>
 #include "src/Commands/ClinetCommandsImpl/CapCommand.hpp"
 #include "src/Commands/ClinetCommandsImpl/PassCommand.hpp"
 #include "src/Commands/ClinetCommandsImpl/NickCommand.hpp"
 #include "src/Commands/ClinetCommandsImpl/UserCommand.hpp"
-#include "src/Commands/ClinetCommandsImpl/ServStopCommand.hpp"
+#include "src/Commands/ClinetCommandsImpl/DieCommand.hpp"
 #include "src/Commands/ClinetCommandsImpl/PingCommand.hpp"
 
 CommandFactory::CommandFactory() {}
@@ -31,14 +30,21 @@ ClientMessage::Ptr CommandFactory::createCommand(const Message & msg) {
         result = new NickCommand(msg);
     if (messageBNF.command == "USER")
         result = new UserCommand(msg);
-    if (messageBNF.command == "SERVSTOP")
-        result = new ServStopCommand(msg);
+    if (messageBNF.command == "DIE")
+        result = new DieCommand(msg);
     if (messageBNF.command == "PING")
         result = new PingCommand(msg);
     if (messageBNF.command == "JOIN")
         result = new JoinCommand(msg);
     if (messageBNF.command == "PRIVMSG")
         result = new PrivmsgCommand(msg);
+    if (messageBNF.command == "OPER")
+        result = new OperCommand(msg);
+    if (messageBNF.command == "KICK")
+        result = new KickCommand(msg);
+    if (messageBNF.command == "QUIT")
+        result = new QuitCommand(msg);
+
 
     return ClientMessage::Ptr(result);
 }

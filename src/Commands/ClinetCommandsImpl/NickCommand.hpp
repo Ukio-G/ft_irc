@@ -16,7 +16,6 @@ public:
 
     ~NickCommand();
 
-private:
     ft::optional<ServerResponse> exec();
 };
 

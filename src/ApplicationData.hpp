@@ -27,6 +27,7 @@ public:
     static ft::shared_ptr<ApplicationData> instance();
 
     std::string password;
+    std::string operatorPass;
     std::string serverName;
 
     /* Internal logic's data */
@@ -34,6 +35,7 @@ public:
     std::deque<ClientMessage::Ptr> commandQueue; // TODO: move to CommandsQueue logic with incapsulate append new commands
     std::map<std::string, IRCChannel::Ptr> channels;
     std::map<int, User::Ptr> users; /* SocketFD (client connection identifier) to User::Ptr */
+    std::vector<User::Ptr> userOperator;
 
     /* Logics */
     SocketServer * server;
@@ -43,6 +45,7 @@ public:
 
     /* Request to find data */
     static ft::optional<User::Ptr> getUserByNick(const std::string & nick);
+    static std::vector<IRCChannel::Ptr> userChannels(User::Ptr user);
 
 };
 

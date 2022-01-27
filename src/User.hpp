@@ -5,10 +5,12 @@
 #include <string>
 #include <shared_ptr.hpp>
 #include <netinet/in.h>
+#include <vector>
 
 class User {
 public:
     typedef ft::shared_ptr<User> Ptr;
+    typedef std::vector<Ptr>::iterator Iterator;
 
     User();
 
@@ -42,9 +44,11 @@ public:
     bool isAuthorized() const;
     void setAuthorized(bool authorized);
 
-    std::string generateFullUsername() {
-        return nick + "!"+ userName +"@" + host;
-    }
+    std::string generateFullUsername() const;
+    std::string generateFullUsername();
+
+    bool isOperator() const;
+    void setIsOperator(bool isOperator);
 
     ~User();
 
@@ -58,10 +62,6 @@ private:
     int mode;
     bool authorized;
     bool is_operator;
-public:
-    bool isOperator() const;
-
-    void setIsOperator(bool isOperator);
 };
 
 

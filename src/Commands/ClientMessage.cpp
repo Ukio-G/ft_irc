@@ -3,7 +3,7 @@
 
 ClientMessage::ClientMessage() {}
 
-ClientMessage::ClientMessage(const ClientMessage &other) {}
+ClientMessage::ClientMessage(const ClientMessage &other) : m_message(other.m_message) {}
 
 ClientMessage &ClientMessage::operator=(const ClientMessage &other) {
     if (&other == this)

@@ -1,7 +1,3 @@
-//
-// Created by ukio on 1/24/22.
-//
-
 #ifndef CAPCOMMAND_HPP
 #define CAPCOMMAND_HPP
 
@@ -9,7 +5,6 @@
 
 class CapCommand : public ClientMessage {
 public:
-
     typedef ft::shared_ptr<CapCommand> Ptr;
 
     CapCommand();
@@ -22,7 +17,6 @@ public:
 
     ~CapCommand();
 
-private:
     ft::optional<ServerResponse> exec();
 };
 

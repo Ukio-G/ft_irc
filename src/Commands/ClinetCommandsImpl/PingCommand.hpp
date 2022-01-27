@@ -1,10 +1,5 @@
-//
-// Created by ukio on 1/24/22.
-//
-
 #ifndef PINGCOMMAND_HPP
 #define PINGCOMMAND_HPP
-
 
 #include <optional.hpp>
 #include "src/Commands/ClientMessage.hpp"
@@ -21,7 +16,6 @@ public:
 
     ~PingCommand();
 
-private:
     ft::optional<ServerResponse> exec();
 };
 

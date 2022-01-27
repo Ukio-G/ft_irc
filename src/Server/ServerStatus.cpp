@@ -38,7 +38,7 @@ Message ServerStatus::rpl_luserclient(User::Ptr to) {
     std::string server_name = app_data->serverName;
     size_t users_count = ApplicationData::instance()->users.size();
 
-    Message msg(":" + server_name + " 251 " + to->getNick() + " :There are " + ft::to_string((int)users_count) + " users and 1 services on 1 servers", to);
+    Message msg("251 " + to->getNick() + " :There are " + ft::to_string((int)users_count) + " users and 1 services on 1 servers", to);
     return msg;
 }
 
@@ -56,7 +56,7 @@ Message ServerStatus::rpl_luserop(User::Ptr to) {
 //            operators++;
 //    }
 
-    Message msg(":" + server_name + " 252 " + to->getNick() + " " + ft::to_string(operators)+ " :operator(s) online", to);
+    Message msg("252 " + to->getNick() + " " + ft::to_string(operators)+ " :operator(s) online", to);
     return msg;
 }
 
@@ -64,7 +64,7 @@ Message ServerStatus::rpl_luserunknown(User::Ptr to) {
     ApplicationData::Ptr app_data = ApplicationData::instance();
     std::string server_name = app_data->serverName;
 
-    Message msg(":" + server_name + " 253 " + to->getNick() + " 0 :unknown connection(s)", to);
+    Message msg("253 " + to->getNick() + " 0 :unknown connection(s)", to);
     return msg;
 }
 
@@ -73,7 +73,7 @@ Message ServerStatus::rpl_luserchannels(User::Ptr to) {
     std::string server_name = app_data->serverName;
     size_t channels_count = ApplicationData::instance()->channels.size();
 
-    Message msg(":" + server_name + " 254 " + to->getNick() + " "+ ft::to_string((int)channels_count)+" :channels formed", to);
+    Message msg("254 " + to->getNick() + " "+ ft::to_string((int)channels_count)+" :channels formed", to);
     return msg;
 }
 
@@ -82,6 +82,6 @@ Message ServerStatus::rpl_luserme(User::Ptr to) {
     std::string server_name = app_data->serverName;
     size_t users_count = ApplicationData::instance()->users.size();
 
-    Message msg(":" + server_name + " 255 " + to->getNick() + " :I have " + ft::to_string((int)users_count) + " clients and 1 servers", to);
+    Message msg("255 " + to->getNick() + " :I have " + ft::to_string((int)users_count) + " clients and 1 servers", to);
     return msg;
 }

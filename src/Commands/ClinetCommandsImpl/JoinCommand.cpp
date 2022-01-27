@@ -1,7 +1,3 @@
-//
-// Created by ukio on 1/26/22.
-//
-
 #include <src/ApplicationData.hpp>
 #include "JoinCommand.hpp"
 
@@ -18,9 +14,7 @@ JoinCommand &JoinCommand::operator=(const JoinCommand &other) {
     return *this;
 }
 
-JoinCommand::~JoinCommand() {
-
-}
+JoinCommand::~JoinCommand() { }
 
 ft::optional<ServerResponse> JoinCommand::exec() {
     ApplicationData::Ptr app_data = ApplicationData::instance();

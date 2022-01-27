@@ -1,7 +1,3 @@
-//
-// Created by ukio on 1/26/22.
-//
-
 #ifndef MODECOMMAND_HPP
 #define MODECOMMAND_HPP
 
@@ -24,7 +20,6 @@ public:
 
     ft::optional<ServerResponse> exec();
 
-private:
 };
 
 

@@ -1,7 +1,3 @@
-//
-// Created by ukio on 1/24/22.
-//
-
 #include <src/ApplicationData.hpp>
 #include "NickCommand.hpp"
 

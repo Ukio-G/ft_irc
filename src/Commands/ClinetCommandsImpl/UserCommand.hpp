@@ -1,7 +1,6 @@
 #ifndef USERCOMMAND_HPP
 #define USERCOMMAND_HPP
 
-
 #include "src/Commands/ClientMessage.hpp"
 
 class UserCommand : public ClientMessage {
@@ -17,7 +16,6 @@ public:
     ~UserCommand();
 
     ft::optional<ServerResponse> exec();
-private:
 };
 
 

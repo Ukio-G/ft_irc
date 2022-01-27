@@ -26,4 +26,13 @@ namespace ft {
         f << num;
         return f.str();
     }
+
+    bool is_channel(const std::string & str) {
+        return (str[0] == '#');
+    }
+
+    bool is_user(const std::string & str) {
+        return (str[0] != '#');
+    }
+
 }

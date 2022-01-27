@@ -43,7 +43,7 @@ std::vector<Message> IRCChannel::generateMessage(const std::string &str, User::P
         // TODO: maybe best to implement "from" in sender function (instead of append it's in the start of message)?
         if (skip_sender && users[i]->getNick() == from->getNick())
             continue;
-        Message msg = Message(":" + from->generateFullUsername() + " " + str, users[i], from);
+        Message msg = Message(str, users[i], from);
         result.push_back(msg);
     }
     return result;
@@ -68,22 +68,9 @@ std::vector<Message> IRCChannel::generateUsersList(User::Ptr to) {
 
     std::string serverName = ApplicationData::instance()->serverName;
 
-    Message RPL_NAMTOPIC(":" + serverName + " 332 " + to->getNick() + " #" + channelName + " :Channel topic", to);
-
-
-    /*
-     * :ergo.test 353 ukiomobilenick = #1 :@nick ukiomobilenick
-     * :ft_irc.42 353 nick = #2 :@qwe nick
-     */
-    Message RPL_NAMREPLY(":" + serverName + " 353 " + to->getNick() + " = #" + channelName + " :" + names, to);
-
-
-    /*
-     *
-     * :ft_irc.42 366 nick #2 :End of NAMES list
-     * :ergo.test 366 ukiomobilenick #1 :End of NAMES list
-     */
-    Message RPL_ENDOFNAMES(":" + serverName + " 366 " + to->getNick() + " #" + channelName + " :End of NAMES list", to);
+    Message RPL_NAMTOPIC("332 " + to->getNick() + " #" + channelName + " :Channel topic", to);
+    Message RPL_NAMREPLY("353 " + to->getNick() + " = #" + channelName + " :" + names, to);
+    Message RPL_ENDOFNAMES("366 " + to->getNick() + " #" + channelName + " :End of NAMES list", to);
 
     result.push_back(RPL_NAMTOPIC);
     result.push_back(RPL_NAMREPLY);
@@ -101,8 +88,48 @@ std::vector<Message> IRCChannel::generateUsersList(User::Ptr to) {
 ft::optional<Message> IRCChannel::appendUser(User::Ptr newUser) {
     if (std::find(users.begin(), users.end(), newUser) != users.end()) {
         //TODO: Error - user already joined in the channel
+        return ft::nullopt;
     }
     users.push_back(newUser);
     return ft::nullopt;
+}
+
+/**
+ * Try to append new user. If it fails - return Message with error.
+ * If no Message returned - User append was successful
+ * @param newUser
+ * @return
+ */
+ft::optional<Message> IRCChannel::appendUserAsOperator(User::Ptr newUser) {
+    if (!isUserAvailable(newUser))
+        return ft::nullopt;         //TODO: Error - try to make operator user, which not on the channel
+
+    if (isChannelOperator(newUser)) {
+        //TODO: Error - user already operator
+        return ft::nullopt;
+    }
+    operators.push_back(newUser);
+    return ft::nullopt;
+}
+
+bool IRCChannel::isUserAvailable(User::Ptr user) {
+    std::vector<User::Ptr>::iterator uIt = std::find(users.begin(), users.end(), user);
+    return uIt != users.end();
+}
+
+void IRCChannel::removeUser(User::Ptr user) {
+    std::vector<User::Ptr>::iterator uIt = std::find(users.begin(), users.end(), user);
+    if (uIt != users.end()) users.erase(uIt);
+
+    uIt = std::find(operators.begin(), operators.end(), user);
+    if (uIt != users.end()) users.erase(uIt);
+}
+
+bool IRCChannel::isChannelOperator(User::Ptr user) {
+    if (!isUserAvailable(user))
+        return false;
+    std::vector<User::Ptr>::iterator uIt = std::find(operators.begin(), operators.end(), user);
+
+    return uIt != operators.end();
 }
 

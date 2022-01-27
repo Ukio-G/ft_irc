@@ -120,6 +120,7 @@ void SocketServer::Loop() {
         handleNewTcpConnection();
         handleExistingTcpConnection(ready - 1);
         appdata->commandsQueue.handleCommands();
+         disconnectUsersInQueue();
     }
     CloseAllConnection();
 }
@@ -147,10 +148,10 @@ void SocketServer::stop() {
 
 void SocketServer::CloseAllConnection() {
     for (int i = 1; i < m_pollfds.size(); ++i) {
-        shutdown(m_pollfds[i].fd, 0);
+//        shutdown(m_pollfds[i].fd, 0);
         close(m_pollfds[i].fd);
     }
-    shutdown(m_pollfds[0].fd, 0);
+//    shutdown(m_pollfds[0].fd, 0);
     close(m_pollfds[0].fd);
 }
 
@@ -161,12 +162,42 @@ void SocketServer::Write(const ServerResponse & response) {
 }
 
 void SocketServer::Write(const Message &message) {
-    const std::string str = (std::string)message.messageBnf;
+    std::string str = (std::string)message.messageBnf;
+
+    ApplicationData::Ptr app_data = ApplicationData::instance();
+    if (message.m_from)
+        str = ":" + message.m_from->generateFullUsername() + " " + str;
+    else
+        str = ":" + app_data->serverName + " " + str;
+
     write(message.m_to->getSockFd(), str.data(), str.size());
 }
 
+void SocketServer::disconnectUser(User::Ptr user) {
+    for (pollIt it = m_pollfds.begin(); it != m_pollfds.end(); it++) {
+        if (it->fd == user->getSockFd()) {
+            int fd = it->fd;
+            userDisconnected(it);
+            close(fd);
+            return;
+        }
+    }
+}
+
+/**
+ * Function called if user disconnected in RST-style - without send QUIT or DISCONNECT messages
+ * Here we should remove users from all channels and notify other users, that left user not available anymore.
+ * @param iterator
+ */
 void SocketServer::userDisconnected(SocketServer::pollIt & iterator) {
     ApplicationData::Ptr appdata = ApplicationData::instance();
+
+    User::Ptr user = appdata->users[iterator->fd];
+    // Clean channels
+    std::vector<IRCChannel::Ptr> channels = appdata->userChannels(user);
+    for (int i = 0; i < channels.size(); ++i) {
+        channels[i]->removeUser(user);
+    }
 
     appdata->users.erase(iterator->fd);
     appdata->lockedCap.erase(iterator->fd);
@@ -180,6 +211,21 @@ void SocketServer::userDisconnected(SocketServer::pollIt & iterator) {
             it++;
     }
 
-    iterator = m_pollfds.erase(iterator);
+    m_pollfds.erase(iterator);
+}
+
+void SocketServer::appendToDisconnectQueue(int sockfd) {
+    m_disconnectQueue.push_back(sockfd);
+}
+
+void SocketServer::disconnectUsersInQueue() {
+    ApplicationData::Ptr appdata = ApplicationData::instance();
+
+    for (int i = 0; i < m_disconnectQueue.size(); ++i) {
+        User::Ptr user = appdata->users[m_disconnectQueue[i]];
+        disconnectUser(user);
+    }
+    m_disconnectQueue.clear();
+
 }
 

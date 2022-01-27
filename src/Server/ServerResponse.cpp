@@ -15,6 +15,4 @@ ServerResponse &ServerResponse::operator=(const ServerResponse &other) {
     return *this;
 }
 
-ServerResponse::~ServerResponse() {
-
-}
+ServerResponse::~ServerResponse() { }

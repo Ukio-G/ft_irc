@@ -1,7 +1,3 @@
-//
-// Created by ukio on 1/26/22.
-//
-
 #include "ModeCommand.hpp"
 
 ModeCommand::ModeCommand() {}

@@ -1,7 +1,3 @@
-//
-// Created by ukio on 1/24/22.
-//
-
 #include <src/ApplicationData.hpp>
 #include <optional.hpp>
 #include "UserCommand.hpp"
@@ -37,9 +33,7 @@ ft::optional<ServerResponse> UserCommand::exec() {
 
     const std::string & nick = user->getNick();
 
-    std::string  full_client_identifier = nick + "!" + user_name + "@" + user->getHost();
-
-    Message welcome(MessageBNF(":ft_irc.42 001 " + nick + " :Welcome to IRC Server " + full_client_identifier), user);
+    Message welcome(MessageBNF("001 " + nick + " :Welcome to IRC Server " + user->generateFullUsername()), user);
 
     result.m_replies.push_back(welcome);
 
@@ -50,6 +44,7 @@ ft::optional<ServerResponse> UserCommand::exec() {
     result.m_replies.push_back(status.getReplyMessage(ServerStatus::RPL_LUSERUNKNOWN, user));
     result.m_replies.push_back(status.getReplyMessage(ServerStatus::RPL_LUSERCHANNELS, user));
     result.m_replies.push_back(status.getReplyMessage(ServerStatus::RPL_LUSERME, user));
+    result.m_replies.push_back(Message("422 " + user_name + " :MOTD File is missing", user));
 
     return result;
 }

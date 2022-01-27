@@ -1,15 +1,12 @@
-//
-// Created by ukio on 1/26/22.
-//
-
 #ifndef JOINCOMMAND_HPP
 #define JOINCOMMAND_HPP
-
 
 #include <src/Commands/ClientMessage.hpp>
 
 class JoinCommand : public ClientMessage {
 public:
+    typedef ft::shared_ptr<JoinCommand> Ptr;
+
     JoinCommand();
 
     JoinCommand(const JoinCommand &other);
@@ -21,7 +18,6 @@ public:
     ~JoinCommand();
 
     ft::optional<ServerResponse> exec();
-private:
 };
 
 

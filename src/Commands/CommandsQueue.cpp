@@ -1,7 +1,3 @@
-//
-// Created by ukio on 1/24/22.
-//
-
 #include <src/ApplicationData.hpp>
 #include "CommandsQueue.hpp"
 
@@ -30,7 +26,7 @@ void CommandsQueue::handleCommands() {
 
     for (cmdIt it = app_data->commandQueue.begin() ; it != app_data->commandQueue.end(); ) {
         const Message & msg = it->get()->m_message;
-        int from = msg.m_from;
+        int from = 1000; // TODO: CAP END lock?
         if (app_data->lockedCap.find(from) != app_data->lockedCap.end()) {
             if (msg.messageBnf.command != "CAP") {
                 it++;

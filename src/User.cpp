@@ -102,3 +102,11 @@ void User::setIsOperator(bool isOperator) {
     is_operator = isOperator;
 }
 
+std::string User::generateFullUsername() const {
+    return nick + "!"+ userName +"@" + host;
+}
+
+std::string User::generateFullUsername() {
+    return nick + "!"+ userName +"@" + host;
+}
+

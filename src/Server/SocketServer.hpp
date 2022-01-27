@@ -37,6 +37,8 @@ public:
     void handleExistingTcpConnection(int connections);
     void stop();
     void handleIncomingData(int conn_fd);
+    void appendToDisconnectQueue(int sockfd);
+
 
 private:
     unsigned short      m_port;
@@ -46,8 +48,11 @@ private:
     char                m_in_buffer[BUFFER_SIZE];
     sockaddr_in         m_addr;
     std::vector<pollfd> m_pollfds;
+    std::vector<int>    m_disconnectQueue; // Queue users to safe disconnect (this vector contains sockFDs)
 
     void userDisconnected(pollIt &iterator);
+    void disconnectUser(User::Ptr user);
+    void disconnectUsersInQueue();
 };
 
 
