@@ -12,6 +12,7 @@
 #include "src/Commands/ClinetCommandsImpl/DieCommand.hpp"
 #include "src/Commands/ClinetCommandsImpl/PingCommand.hpp"
 #include <src/Commands/ClinetCommandsImpl/ModeCommand.hpp>
+#include <src/Commands/ClinetCommandsImpl/NoticeCommand.hpp>
 
 CommandFactory::CommandFactory() {}
 
@@ -50,6 +51,8 @@ ClientMessage::Ptr CommandFactory::createCommand(const Message & msg) {
         result = new PartCommand(msg);
     if (messageBNF.command == "MODE")
         result = new ModeCommand(msg);
+    if (messageBNF.command == "NOTICE")
+        result = new NoticeCommand(msg);
 
     return ClientMessage::Ptr(result);
 }
