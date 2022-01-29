@@ -100,9 +100,9 @@ void SocketServer::handleExistingTcpConnection(int connections) {
     for (pollIt it = m_pollfds.begin() + 1; it != m_pollfds.end(); ) {
         if (it->revents & POLLRDNORM) {
             /* Read data from client */
-            if (readFromClient(it->fd) != RR_Ok) {
+            if (readFromClient(it->fd, false) != RR_Ok) {
                 std::cout << "Client " << appdata->users[it->fd]->generateFullUsername() << " disconnected" << std::endl;
-                userDisconnected(it);
+                disconnectUser(appdata->users[it->fd]);
                 continue;
             }
             handleIncomingData(it->fd);
@@ -120,7 +120,7 @@ void SocketServer::Loop() {
         handleNewTcpConnection();
         handleExistingTcpConnection(ready - 1);
         appdata->commandsQueue.handleCommands();
-         disconnectUsersInQueue();
+        disconnectUsersInQueue();
     }
     CloseAllConnection();
 }
@@ -128,13 +128,37 @@ void SocketServer::Loop() {
 void SocketServer::handleIncomingData(int conn_fd) {
     std::string str_buffer(m_in_buffer);
 
+    char last = str_buffer[str_buffer.size() - 1];
+    char pre_last = str_buffer[str_buffer.size() - 2];
+
+    // is terminal sequence "\x0d\x0a"
+    bool x0dx0a_seq = (pre_last == '\x0d') && (last == '\x0a');
+    bool x0d_seq = (last == '\x0a');
+
+    // Unfinished command
+    if (!x0d_seq && !x0dx0a_seq) {
+        if (unfinished_commands[conn_fd].has_value()) // already have something in the unfinished buffer
+            unfinished_commands[conn_fd].value() += str_buffer;
+        else
+            unfinished_commands[conn_fd] = str_buffer;
+        return;
+    }
+
+    // Maybe we have something in unfinished command buffer?
+    if (unfinished_commands[conn_fd].has_value()) {
+        str_buffer = unfinished_commands[conn_fd].value() + str_buffer;
+        unfinished_commands[conn_fd].reset();
+    }
+
     ApplicationData::Ptr appdata = ApplicationData::instance();
 
     std::string delimiter = (str_buffer[str_buffer.size() - 2] == '\x0d') ? "\x0d\x0a" : "\x0a";
 
-    std::vector<std::string> raw_commands = ft::split(m_in_buffer, delimiter);
+    std::vector<std::string> raw_commands = ft::split(str_buffer, delimiter);
 
     for (int i = 0; i < raw_commands.size(); ++i) {
+        if (raw_commands[i].empty())
+            continue;
         Message msg(raw_commands[i], User::Ptr(0), appdata->users[conn_fd]);
         ClientMessage::Ptr new_cmd = appdata->factory.createCommand(msg);
         if (new_cmd)
@@ -148,10 +172,8 @@ void SocketServer::stop() {
 
 void SocketServer::CloseAllConnection() {
     for (int i = 1; i < m_pollfds.size(); ++i) {
-//        shutdown(m_pollfds[i].fd, 0);
         close(m_pollfds[i].fd);
     }
-//    shutdown(m_pollfds[0].fd, 0);
     close(m_pollfds[0].fd);
 }
 

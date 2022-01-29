@@ -29,6 +29,17 @@ namespace ft {
         optional<T>& operator=(const T& other)
         {
             _value = other;
+            _has_value = true;
+            return *this;
+        }
+
+        optional<T>& operator=(const optional<T>& other)
+        {
+            if (&other == this)
+                return *this;
+
+            _value = other._value;
+            _has_value = other._has_value;
             return *this;
         }
 

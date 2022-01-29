@@ -5,6 +5,8 @@
 #include <netinet/in.h>
 #include <sys/poll.h>
 #include <string>
+#include <map>
+#include <optional.hpp>
 #include "ServerResponse.hpp"
 
 #ifndef INFTIM
@@ -41,14 +43,15 @@ public:
 
 
 private:
-    unsigned short      m_port;
-    bool                m_running;
-    int                 m_max_clients;
-    int                 m_sock_fd;
-    char                m_in_buffer[BUFFER_SIZE];
-    sockaddr_in         m_addr;
-    std::vector<pollfd> m_pollfds;
-    std::vector<int>    m_disconnectQueue; // Queue users to safe disconnect (this vector contains sockFDs)
+    unsigned short                              m_port;
+    bool                                        m_running;
+    int                                         m_max_clients;
+    int                                         m_sock_fd;
+    char                                        m_in_buffer[BUFFER_SIZE];
+    sockaddr_in                                 m_addr;
+    std::vector<pollfd>                         m_pollfds;
+    std::vector<int>                            m_disconnectQueue; // Queue users to safe disconnect (this vector contains sockFDs)
+    std::map<int, ft::optional<std::string> >   unfinished_commands;
 
     void userDisconnected(pollIt &iterator);
     void disconnectUser(User::Ptr user);
