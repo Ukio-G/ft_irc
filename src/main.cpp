@@ -10,6 +10,7 @@ int main(int argc, char *argv[]) {
     ApplicationData::instance()->server = &ss;
     ApplicationData::instance()->serverName = "ft_irc.42";
     ApplicationData::instance()->operatorPass = "123456";
+    ApplicationData::instance()->password = "123456";
 
     ss.Listen();
     ss.Loop();

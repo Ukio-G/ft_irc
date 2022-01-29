@@ -20,12 +20,14 @@ KickCommand::KickCommand(const Message &message) : ClientMessage(message) { }
 ft::optional<ServerResponse> KickCommand::exec() {
     ServerResponse result;
     ApplicationData::Ptr app_data = ApplicationData::instance();
-    const std::string & channelName = m_message.messageBnf.arguments[0];
+    std::string channelName = m_message.messageBnf.arguments[0];
     // Check first arg is a channel
     if (!ft::is_channel(channelName)) {
         // TODO: Error first arg
         return result;
     }
+
+    channelName = channelName.substr(1, channelName.size() - 1);
 
     // Check channel exist
     IRCChannel::Iterator chIt = app_data->channels.find(channelName);
@@ -55,8 +57,12 @@ ft::optional<ServerResponse> KickCommand::exec() {
         return result;
     }
 
-    channel->removeUser(*user_opt);
+    // Generate server replies for each user
+    std::vector<Message> msgsVector;
+    msgsVector = channel->generateMessage("KICK #" + channelName + " " + (*user_opt)->getNick() + " :Kick", m_message.m_from);
+    result.append(msgsVector);
 
+    channel->removeUser(*user_opt);
 
     return result;
 }

@@ -27,7 +27,7 @@ ft::optional<ServerResponse> JoinCommand::exec() {
 
     if (isChannelExist) {
         ft::optional<Message> appendResult = app_data->channels[channelName]->appendUser(m_message.m_from);
-        if (appendResult.has_value()) {
+        if (appendResult.has_value()) { // If appendResult has value, something was wrong, and appendResult contain error message
             response.m_replies.push_back(*appendResult);
             return response;
         }

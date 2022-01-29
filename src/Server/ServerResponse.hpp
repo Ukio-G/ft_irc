@@ -19,6 +19,8 @@ public:
     ~ServerResponse();
 
     std::vector<Message> m_replies;
+
+    void append(const std::vector<Message> & messages);
 private:
 };
 

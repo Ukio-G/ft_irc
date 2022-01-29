@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <utils.hpp>
 #include "IRCChannel.hpp"
 #include "ApplicationData.hpp"
 
@@ -6,8 +7,8 @@ IRCChannel::IRCChannel() {}
 
 IRCChannel::IRCChannel(const std::string & channelName, User::Ptr channelCreator) {
     this->channelName = channelName;
-    users.push_back(channelCreator);
-    operators.push_back(channelCreator);
+    users.insert(channelCreator);
+    operators.insert(channelCreator);
 }
 
 IRCChannel::IRCChannel(const IRCChannel &other) :
@@ -39,11 +40,11 @@ IRCChannel::~IRCChannel() {
  */
 std::vector<Message> IRCChannel::generateMessage(const std::string &str, User::Ptr from, bool skip_sender) {
     std::vector<Message> result;
-    for (int i = 0; i < users.size(); ++i) {
-        // TODO: maybe best to implement "from" in sender function (instead of append it's in the start of message)?
-        if (skip_sender && users[i]->getNick() == from->getNick())
+    for (uIt_t it = users.begin(); it != users.end(); it++) {
+    // TODO: maybe best to implement "from" in sender function (instead of append it's in the start of message)?
+        if (skip_sender && (*it)->getNick() == from->getNick())
             continue;
-        Message msg = Message(str, users[i], from);
+        Message msg = Message(str, *it, from);
         result.push_back(msg);
     }
     return result;
@@ -56,14 +57,14 @@ std::vector<Message> IRCChannel::generateMessage(const std::string &str, User::P
 std::vector<Message> IRCChannel::generateUsersList(User::Ptr to) {
     std::vector<Message> result;
     std::string names;
-    for (int i = 0; i < users.size(); ++i) {
+    for (uIt_t it = users.begin(); it != users.end(); it++) {
         //TODO: Maybe i can optimize this with RBTree (store operators in std::set... and define operator<=> for User[::Ptr])?
-        bool isChannelOperator = std::find(operators.begin(), operators.end(), users[i]) != operators.end();
+        bool isChannelOperator = std::find(operators.begin(), operators.end(), *it) != operators.end();
 
-        if (i != 0)             names += " ";
-        if (isChannelOperator)  names += "@";
+        if (it != users.begin()) names += " ";
+        if (isChannelOperator)   names += "@";
 
-        names += users[i]->getNick();
+        names += (*it)->getNick();
     }
 
     std::string serverName = ApplicationData::instance()->serverName;
@@ -90,7 +91,14 @@ ft::optional<Message> IRCChannel::appendUser(User::Ptr newUser) {
         //TODO: Error - user already joined in the channel
         return ft::nullopt;
     }
-    users.push_back(newUser);
+
+    if (isBanned(newUser)) {
+        //TODO: Error - user banned
+        Message msg("474 " + newUser->getNick() + " #" + channelName + " :Cannot join channel (+b)", newUser);
+        return msg;
+    }
+
+    users.insert(newUser);
     return ft::nullopt;
 }
 
@@ -108,28 +116,49 @@ ft::optional<Message> IRCChannel::appendUserAsOperator(User::Ptr newUser) {
         //TODO: Error - user already operator
         return ft::nullopt;
     }
-    operators.push_back(newUser);
+    operators.insert(newUser);
     return ft::nullopt;
 }
 
 bool IRCChannel::isUserAvailable(User::Ptr user) {
-    std::vector<User::Ptr>::iterator uIt = std::find(users.begin(), users.end(), user);
+    uIt_t uIt = std::find(users.begin(), users.end(), user);
     return uIt != users.end();
 }
 
 void IRCChannel::removeUser(User::Ptr user) {
-    std::vector<User::Ptr>::iterator uIt = std::find(users.begin(), users.end(), user);
+    uIt_t uIt = std::find(users.begin(), users.end(), user);
     if (uIt != users.end()) users.erase(uIt);
 
     uIt = std::find(operators.begin(), operators.end(), user);
-    if (uIt != users.end()) users.erase(uIt);
+    if (uIt != operators.end()) operators.erase(uIt);
 }
 
 bool IRCChannel::isChannelOperator(User::Ptr user) {
     if (!isUserAvailable(user))
         return false;
-    std::vector<User::Ptr>::iterator uIt = std::find(operators.begin(), operators.end(), user);
+    uIt_t uIt = std::find(operators.begin(), operators.end(), user);
 
     return uIt != operators.end();
+}
+
+ft::optional<Message> IRCChannel::removeUserFromOperators(User::Ptr newUser) {
+    if (operators.find(newUser) != operators.end())
+        operators.erase(newUser);
+    return ft::nullopt;
+}
+
+ft::optional<Message> IRCChannel::addUserToBanList(User::Ptr newUser) {
+    banned.insert(newUser->getNick());
+    return ft::nullopt;
+}
+
+ft::optional<Message> IRCChannel::removeUserFromBanList(User::Ptr newUser) {
+    if (banned.find(newUser->getNick()) != banned.end())
+        banned.erase(newUser->getNick());
+    return ft::nullopt;
+}
+
+bool IRCChannel::isBanned(User::Ptr user) {
+    return (banned.find(user->getNick()) != banned.end());
 }
 

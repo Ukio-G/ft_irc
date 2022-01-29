@@ -33,6 +33,17 @@ ft::optional<ServerResponse> UserCommand::exec() {
 
     const std::string & nick = user->getNick();
 
+    // Check authorized. If false - password was incorrect => interrupt login and disconnect
+
+    if (!user->isAuthorized()) {
+        result.m_replies.push_back(Message("464 * :Password incorrect", user));
+        result.m_replies.push_back(Message("ERROR :Password incorrect", user));
+
+        app_data->server->appendToDisconnectQueue(user->getSockFd());
+        return result;
+    }
+
+    result.m_replies.push_back(Message("PASS Correct password", user));
     Message welcome(MessageBNF("001 " + nick + " :Welcome to IRC Server " + user->generateFullUsername()), user);
 
     result.m_replies.push_back(welcome);

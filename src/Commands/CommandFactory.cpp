@@ -4,12 +4,14 @@
 #include <src/Commands/ClinetCommandsImpl/OperCommand.hpp>
 #include <src/Commands/ClinetCommandsImpl/KickCommand.hpp>
 #include <src/Commands/ClinetCommandsImpl/QuitCommand.hpp>
+#include <src/Commands/ClinetCommandsImpl/PartCommand.hpp>
 #include "src/Commands/ClinetCommandsImpl/CapCommand.hpp"
 #include "src/Commands/ClinetCommandsImpl/PassCommand.hpp"
 #include "src/Commands/ClinetCommandsImpl/NickCommand.hpp"
 #include "src/Commands/ClinetCommandsImpl/UserCommand.hpp"
 #include "src/Commands/ClinetCommandsImpl/DieCommand.hpp"
 #include "src/Commands/ClinetCommandsImpl/PingCommand.hpp"
+#include <src/Commands/ClinetCommandsImpl/ModeCommand.hpp>
 
 CommandFactory::CommandFactory() {}
 
@@ -44,7 +46,10 @@ ClientMessage::Ptr CommandFactory::createCommand(const Message & msg) {
         result = new KickCommand(msg);
     if (messageBNF.command == "QUIT")
         result = new QuitCommand(msg);
-
+    if (messageBNF.command == "PART")
+        result = new PartCommand(msg);
+    if (messageBNF.command == "MODE")
+        result = new ModeCommand(msg);
 
     return ClientMessage::Ptr(result);
 }

@@ -46,7 +46,7 @@ std::vector<Message> PrivmsgCommand::messageToChannel(const std::string & receiv
         return result;
     }
 
-    std::vector<User::Ptr> & channel_users = channelIt->second->users;
+    std::set<User::Ptr> & channel_users = channelIt->second->users;
     if (std::find(channel_users.begin(), channel_users.end(), m_message.m_from) == channel_users.end()) {
         result.push_back(Message("404 " + m_message.m_from->getNick() + " " + m_message.messageBnf.arguments[0] + " :Cannot send to channel (+n)", m_message.m_from));
         return result;

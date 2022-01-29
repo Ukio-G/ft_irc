@@ -34,13 +34,13 @@ namespace ft {
 
         T& operator*() {
             if (!_data)
-                throw std::runtime_error("Tru dereference null smart pointer");
+                throw std::runtime_error("Try dereference null smart pointer");
             return *_data;
         }
 
         const T& operator*() const {
             if (!_data)
-                throw std::runtime_error("Tru dereference null smart pointer");
+                throw std::runtime_error("Try dereference null smart pointer");
             return *_data;
         }
 
@@ -84,24 +84,52 @@ namespace ft {
             _ref_counter = 0;
         }
 
-        template<class U>
-        bool operator==(const shared_ptr<U> & other) {
+        template<class U> bool operator==(const shared_ptr<U> & other) {
             return _data == other._data;
         }
 
-        template<class U>
-        bool operator==(const shared_ptr<U> & other) const {
+        template<class U> bool operator==(const shared_ptr<U> & other) const {
             return _data == other._data;
         }
 
-        template<class U>
-        bool operator!=(shared_ptr<U> & other) {
+        template<class U> bool operator!=(shared_ptr<U> & other) {
             return _data != other._data;
         }
 
-        template<class U>
-        bool operator!=(shared_ptr<U> & other) const {
+        template<class U> bool operator!=(shared_ptr<U> & other) const {
             return _data != other._data;
+        }
+
+        template<class U> bool operator>(const shared_ptr<U> & other) {
+            return _data > other._data;
+        }
+
+        template<class U> bool operator>(const shared_ptr<U> & other) const {
+            return _data > other._data;
+        }
+
+        template<class U> bool operator<(const shared_ptr<U> & other) {
+            return _data < other._data;
+        }
+
+        template<class U> bool operator<(const shared_ptr<U> & other) const {
+            return _data < other._data;
+        }
+
+        template<class U> bool operator<=(const shared_ptr<U> & other) {
+            return _data <= other._data;
+        }
+
+        template<class U> bool operator<=(const shared_ptr<U> & other) const {
+            return _data <= other._data;
+        }
+
+        template<class U> bool operator>=(const shared_ptr<U> & other) {
+            return _data >= other._data;
+        }
+
+        template<class U> bool operator>=(const shared_ptr<U> & other) const {
+            return _data >= other._data;
         }
 
     private:

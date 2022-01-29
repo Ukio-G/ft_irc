@@ -16,3 +16,7 @@ ServerResponse &ServerResponse::operator=(const ServerResponse &other) {
 }
 
 ServerResponse::~ServerResponse() { }
+
+void ServerResponse::append(const std::vector<Message> &messages) {
+    m_replies.insert(m_replies.end(), messages.begin(), messages.end());
+}
