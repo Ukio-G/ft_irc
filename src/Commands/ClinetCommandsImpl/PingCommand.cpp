@@ -19,7 +19,6 @@ PingCommand::~PingCommand() { }
 ft::optional<ServerResponse> PingCommand::exec() {
     ServerResponse result;
 
-    // TODO: Check arguments count
     Message pong(MessageBNF("PONG " + m_message.messageBnf.arguments[0]), m_message.m_from);
 
     result.m_replies.push_back(pong);

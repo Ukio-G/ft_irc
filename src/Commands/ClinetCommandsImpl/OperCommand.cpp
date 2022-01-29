@@ -23,6 +23,12 @@ ft::optional<ServerResponse> OperCommand::exec() {
     std::string passedUser = m_message.messageBnf.arguments[0];
     std::string passedPassword = m_message.messageBnf.arguments[1];
 
+    // Check arguments count
+    if (m_message.messageBnf.arguments.size() < 2) {
+        response.m_replies.push_back(Message("461 " + m_message.m_from->getNick() + " OPER :Not enough parameters", m_message.m_from));
+        return response;
+    }
+
     if (passedUser != "admin" || passedPassword != app_data->operatorPass) {
         Message msg ("464 " + m_message.m_from->getNick() + " :Password incorrect", m_message.m_from);
         response.m_replies.push_back(msg);

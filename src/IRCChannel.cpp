@@ -88,12 +88,10 @@ std::vector<Message> IRCChannel::generateUsersList(User::Ptr to) {
  */
 ft::optional<Message> IRCChannel::appendUser(User::Ptr newUser) {
     if (std::find(users.begin(), users.end(), newUser) != users.end()) {
-        //TODO: Error - user already joined in the channel
         return ft::nullopt;
     }
 
     if (isBanned(newUser)) {
-        //TODO: Error - user banned
         Message msg("474 " + newUser->getNick() + " #" + channelName + " :Cannot join channel (+b)", newUser);
         return msg;
     }

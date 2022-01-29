@@ -21,17 +21,26 @@ ft::optional<ServerResponse> PartCommand::exec() {
     ServerResponse result;
     ApplicationData::Ptr app_data = ApplicationData::instance();
 
-    // Input: PART #1 :https://quassel-irc.org - Chat comfortably. Anywhere.
-    if (!ft::is_channel(m_message.messageBnf.arguments[0])) {
-        // TODO: Argument is not a channel
+    std::string channelName = m_message.messageBnf.arguments[0];
+    std::string userNick = m_message.m_from->getNick();
+
+    // Check arguments count
+    if (m_message.messageBnf.arguments.size() < 1) {
+        result.m_replies.push_back(Message("461 " + m_message.m_from->getNick() + " PART :Not enough parameters", m_message.m_from));
         return result;
     }
-    std::string channelName = m_message.messageBnf.arguments[0];
+
+    // Check channel is correct (# is first letter of channel name)
+    if (!ft::is_channel(channelName)) {
+        result.m_replies.push_back(Message("403 " + userNick + " " + channelName + " :No such channel", m_message.m_from));
+        return result;
+    }
+
     channelName = channelName.substr(1, channelName.size() - 1);
 
     // Check channel exist
     if (app_data->channels.find(channelName) == app_data->channels.end()) {
-        // TODO: No such channel
+        result.m_replies.push_back(Message("403 " + userNick + " #" + channelName + " :No such channel", m_message.m_from));
         return result;
     }
 
@@ -39,19 +48,19 @@ ft::optional<ServerResponse> PartCommand::exec() {
 
     // Check user joined in the channel
     if (!channel->isUserAvailable(m_message.m_from)) {
-        // TODO: User not in the channel
+        result.m_replies.push_back(Message("442 " + userNick + " #" + channelName + " :You're not on that channel", m_message.m_from));
         return result;
     }
 
-
+    // Generate command for each channel user
     std::string cmd_str = "PART " + m_message.messageBnf.arguments[0];
     if (m_message.messageBnf.arguments.size() > 1)
         cmd_str += " " + m_message.messageBnf.arguments[1];     // If user add message to PART command
 
     result.append(channel->generateMessage(cmd_str, m_message.m_from));
 
+    // Remove user from channel
     channel->removeUser(m_message.m_from);
 
-    // Reply for each: :nick!~userA@192.168.0.87 PART #1 :https://quassel-irc.org - Chat comfortably. Anywhere.
     return result;
 }

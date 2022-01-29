@@ -28,33 +28,50 @@ ft::optional<ServerResponse> ModeCommand::exec() {
     ServerResponse result;
     ApplicationData::Ptr app_data = ApplicationData::instance();
     std::string channelName = m_message.messageBnf.arguments[0];
+    std::string userNick = m_message.m_from->getNick();
+
+    if (m_message.messageBnf.arguments.size() == 1)
+        return ft::nullopt;
+
+    if (m_message.messageBnf.arguments.size() < 1) {
+        result.m_replies.push_back(Message("461 " + m_message.m_from->getNick() + " MODE :Not enough parameters", m_message.m_from));
+        return result;
+    }
 
     // Check first arg is a channel
     if (!ft::is_channel(channelName)) {
-        // TODO: Error first arg
+        result.m_replies.push_back(Message("403 " + userNick + " " + channelName + " :No such channel", m_message.m_from));
         return result;
     }
+
     channelName = channelName.substr(1, channelName.size() - 1);
 
     // Check channel exist
     IRCChannel::Iterator chIt = app_data->channels.find(channelName);
-    if (chIt == app_data->channels.end())
-    {
-        // TODO: Error: Channel not exist
+    if (chIt == app_data->channels.end()) {
+        result.m_replies.push_back(Message("403 " + userNick + " #" + channelName + " :No such channel", m_message.m_from));
         return result;
     }
+
     channel = chIt->second;
     // Check current user (which send command to server) is an operator on the channel
     if (!channel->isChannelOperator(m_message.m_from)) {
-        // TODO: Error: User not an operator
+        result.m_replies.push_back(Message("482 " + userNick + " #" + channelName + " :You don't have enough channel privileges", m_message.m_from));
         return result;
     }
 
     // Check user we want affect mode exist on the server
-    ft::optional<User::Ptr> user_opt = app_data->getUserByNick(m_message.messageBnf.arguments[2]);
-    if (!user_opt.has_value())
-    {
-        // TODO: Error: User not exist on the channel
+    ft::optional<User::Ptr> user_opt = app_data->getUserByNick(m_message.messageBnf.arguments[1]);
+    if (!user_opt.has_value()) {
+        std::string non_existed_nick = m_message.messageBnf.arguments[1];
+        result.m_replies.push_back(Message("401 " + userNick + " " + non_existed_nick + " :No such nick", m_message.m_from));
+        return result;
+    }
+
+    // Check user we want affect mode exist on the channel
+    if (!channel->isUserAvailable(*user_opt)) {
+        std::string non_existed_nick = m_message.messageBnf.arguments[1];
+        result.m_replies.push_back(Message("401 " + userNick + " " + non_existed_nick + " :No such nick", m_message.m_from));
         return result;
     }
 
@@ -67,7 +84,7 @@ ft::optional<ServerResponse> ModeCommand::exec() {
 ft::optional<Message> ModeCommand::handleMode() {
     ApplicationData::Ptr app_data = ApplicationData::instance();
 
-    char modeChar = m_message.messageBnf.arguments[1][0];
+     char modeChar = m_message.messageBnf.arguments[1][0];
 
     ft::optional<Message> result = ft::nullopt;
 

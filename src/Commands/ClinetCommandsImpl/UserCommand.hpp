@@ -16,6 +16,10 @@ public:
     ~UserCommand();
 
     ft::optional<ServerResponse> exec();
+
+    std::vector<Message> successAuth();
+
+    bool isRegisterReady();
 };
 
 

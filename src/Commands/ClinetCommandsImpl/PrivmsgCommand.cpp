@@ -67,6 +67,12 @@ ft::optional<ServerResponse> PrivmsgCommand::exec() {
 
     ApplicationData::Ptr app_data = ApplicationData::instance();
 
+    // Check arguments count
+    if (m_message.messageBnf.arguments.size() < 2) {
+        result.m_replies.push_back(Message("461 " + m_message.m_from->getNick() + " PRIVMSG :Not enough parameters", m_message.m_from));
+        return result;
+    }
+
     std::vector<std::string> receivers = ft::split(m_message.messageBnf.arguments[0], ',');
 
     for (int i = 0; i < receivers.size(); ++i) {

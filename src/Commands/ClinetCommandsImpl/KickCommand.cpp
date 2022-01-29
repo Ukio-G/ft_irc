@@ -21,9 +21,17 @@ ft::optional<ServerResponse> KickCommand::exec() {
     ServerResponse result;
     ApplicationData::Ptr app_data = ApplicationData::instance();
     std::string channelName = m_message.messageBnf.arguments[0];
+    std::string userNick = m_message.m_from->getNick();
+
+    // Check arguments count
+    if (m_message.messageBnf.arguments.size() < 2) {
+        result.m_replies.push_back(Message("461 " + m_message.m_from->getNick() + " KICK :Not enough parameters", m_message.m_from));
+        return result;
+    }
+
     // Check first arg is a channel
     if (!ft::is_channel(channelName)) {
-        // TODO: Error first arg
+        result.m_replies.push_back(Message("403 " + userNick + " " + channelName + " :No such channel", m_message.m_from));
         return result;
     }
 
@@ -31,29 +39,30 @@ ft::optional<ServerResponse> KickCommand::exec() {
 
     // Check channel exist
     IRCChannel::Iterator chIt = app_data->channels.find(channelName);
-    if (chIt == app_data->channels.end())
-    {
-        // TODO: Error: Channel not exist
+    if (chIt == app_data->channels.end()) {
+        result.m_replies.push_back(Message("403 " + userNick + " #" + channelName + " :No such channel", m_message.m_from));
         return result;
     }
+
     IRCChannel::Ptr channel = chIt->second;
     // Check current user (which send command to server) is an operator on the channel
     if (!channel->isChannelOperator(m_message.m_from)) {
-        // TODO: Error: User not an operator
+        result.m_replies.push_back(Message("482 " + userNick + " #" + channelName + " :You don't have enough channel privileges", m_message.m_from));
         return result;
     }
 
     // Check user we want to kick exist on the server
     ft::optional<User::Ptr> user_opt = app_data->getUserByNick(m_message.messageBnf.arguments[1]);
-    if (!user_opt.has_value())
-    {
-        // TODO: Error: User not exist on the channel
+    if (!user_opt.has_value()) {
+        std::string non_existed_nick = m_message.messageBnf.arguments[1];
+        result.m_replies.push_back(Message("401 " + userNick + " " + non_existed_nick + " :No such nick", m_message.m_from));
         return result;
     }
 
     // Check user we want to kick on the channel
     if (!channel->isUserAvailable(*user_opt)) {
-        // TODO: Error: User not exist on the channel
+        std::string non_existed_nick = m_message.messageBnf.arguments[1];
+        result.m_replies.push_back(Message("401 " + userNick + " " + non_existed_nick + " :No such nick", m_message.m_from));
         return result;
     }
 

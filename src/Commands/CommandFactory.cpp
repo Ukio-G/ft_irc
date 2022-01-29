@@ -11,6 +11,7 @@
 #include "src/Commands/ClinetCommandsImpl/UserCommand.hpp"
 #include "src/Commands/ClinetCommandsImpl/DieCommand.hpp"
 #include "src/Commands/ClinetCommandsImpl/PingCommand.hpp"
+#include "UndefinedCommand.hpp"
 #include <src/Commands/ClinetCommandsImpl/ModeCommand.hpp>
 #include <src/Commands/ClinetCommandsImpl/NoticeCommand.hpp>
 
@@ -27,32 +28,34 @@ ClientMessage::Ptr CommandFactory::createCommand(const Message & msg) {
 
     if (messageBNF.command == "CAP")
         result = new CapCommand(msg);
-    if (messageBNF.command == "PASS")
+    else if (messageBNF.command == "PASS")
         result = new PassCommand(msg);
-    if (messageBNF.command == "NICK")
+    else if (messageBNF.command == "NICK")
         result = new NickCommand(msg);
-    if (messageBNF.command == "USER")
+    else if (messageBNF.command == "USER")
         result = new UserCommand(msg);
-    if (messageBNF.command == "DIE")
+    else if (messageBNF.command == "DIE")
         result = new DieCommand(msg);
-    if (messageBNF.command == "PING")
+    else if (messageBNF.command == "PING")
         result = new PingCommand(msg);
-    if (messageBNF.command == "JOIN")
+    else if (messageBNF.command == "JOIN")
         result = new JoinCommand(msg);
-    if (messageBNF.command == "PRIVMSG")
+    else if (messageBNF.command == "PRIVMSG")
         result = new PrivmsgCommand(msg);
-    if (messageBNF.command == "OPER")
+    else if (messageBNF.command == "OPER")
         result = new OperCommand(msg);
-    if (messageBNF.command == "KICK")
+    else if (messageBNF.command == "KICK")
         result = new KickCommand(msg);
-    if (messageBNF.command == "QUIT")
+    else if (messageBNF.command == "QUIT")
         result = new QuitCommand(msg);
-    if (messageBNF.command == "PART")
+    else if (messageBNF.command == "PART")
         result = new PartCommand(msg);
-    if (messageBNF.command == "MODE")
+    else if (messageBNF.command == "MODE")
         result = new ModeCommand(msg);
-    if (messageBNF.command == "NOTICE")
+    else if (messageBNF.command == "NOTICE")
         result = new NoticeCommand(msg);
+    else
+        result = new UndefinedCommand(msg);
 
     return ClientMessage::Ptr(result);
 }
