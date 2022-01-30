@@ -16,8 +16,6 @@ public:
 
     explicit User(int fd);
 
-    User(int fd, sockaddr *addr);
-
     User(const User &other);
 
     User &operator=(const User &other);

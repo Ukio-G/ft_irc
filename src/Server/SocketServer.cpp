@@ -57,6 +57,7 @@ void SocketServer::handleNewTcpConnection() {
         pollfd pfd = {new_connfd, POLLRDNORM, 0};
 
         ApplicationData::instance()->users[new_connfd] = User::Ptr(new User(new_connfd));
+        ApplicationData::instance()->users[new_connfd]->setHost(inet_ntoa(m_addr.sin_addr));
 
         m_pollfds.push_back(pfd);
     }

@@ -25,7 +25,7 @@ Message PrivmsgCommand::messageToUser(const std::string & receiverUser) {
     if (!to_opt.has_value())
         return Message("401 " + m_message.m_from->getNick() + " " + m_message.messageBnf.arguments[0] + " :No such nick", m_message.m_from);
 
-    std::string msg_str = "PRIVMSG " + receiverUser;
+    std::string msg_str = "PRIVMSG " + receiverUser + " ";
 
     for (int i = 1; i < m_message.messageBnf.arguments.size(); ++i)
         msg_str += m_message.messageBnf.arguments[i] + " ";

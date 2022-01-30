@@ -7,16 +7,7 @@ User::User(const User &other) : sock_fd(other.sock_fd), nick(other.nick), userNa
 
 }
 
-User::User(int fd, sockaddr *addr) : sock_fd(fd) , authorized(false) {
-    host = inet_ntoa(((sockaddr_in*)addr)->sin_addr);
-}
-
-User::User(int fd) : sock_fd(fd), authorized(false) {
-    sockaddr_in ip4addr;
-    socklen_t len = sizeof(ip4addr);
-    getsockname(fd, (sockaddr*)&ip4addr, &len);
-    host = inet_ntoa(ip4addr.sin_addr);
-}
+User::User(int fd) : sock_fd(fd), authorized(false) { }
 
 User &User::operator=(const User &other) {
     if (&other == this)
