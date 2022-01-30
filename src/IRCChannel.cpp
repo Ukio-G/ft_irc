@@ -129,6 +129,10 @@ void IRCChannel::removeUser(User::Ptr user) {
 
     uIt = std::find(operators.begin(), operators.end(), user);
     if (uIt != operators.end()) operators.erase(uIt);
+    if (users.size() == 0) {
+        ApplicationData::Ptr app_data = ApplicationData::instance();
+        app_data->channels.erase(channelName);
+    }
 }
 
 bool IRCChannel::isChannelOperator(User::Ptr user) {

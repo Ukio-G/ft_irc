@@ -14,7 +14,9 @@ namespace ft {
 
         shared_ptr<T>() : _data(0), _ref_counter(0) { }
 
-        explicit shared_ptr<T>(T * target) {
+        explicit shared_ptr<T>(T * target) : _data(0), _ref_counter(0) {
+            if (!target)
+                return;
             init_from_ptr(target);
         }
 
@@ -140,7 +142,7 @@ namespace ft {
             if (!_ref_counter || !_data)
                 return;
             (*_ref_counter)--;
-            if (_ref_counter == 0) {
+            if (*_ref_counter == 0) {
                 delete _data;
                 delete _ref_counter;
             }
