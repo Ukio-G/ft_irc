@@ -3,7 +3,7 @@
 
 OperCommand::OperCommand() { }
 
-OperCommand::OperCommand(const OperCommand &other) { }
+OperCommand::OperCommand(const OperCommand &other) : ClientMessage((ClientMessage&)other) { }
 
 OperCommand &OperCommand::operator=(const OperCommand &other) {
     if (&other == this)

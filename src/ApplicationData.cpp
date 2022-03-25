@@ -10,9 +10,9 @@
 
 ApplicationData::ApplicationData() { }
 
-ApplicationData::ApplicationData(const ApplicationData &other) { }
+ApplicationData::ApplicationData(const ApplicationData &) { }
 
-ApplicationData &ApplicationData::operator=(const ApplicationData &other) { return *this; }
+ApplicationData &ApplicationData::operator=(const ApplicationData &) { return *this; }
 
 ApplicationData::~ApplicationData() { }
 

@@ -27,8 +27,6 @@ ft::optional<ServerResponse> ModeCommand::exec() {
     // request: MODE #2 +-bv nick
     ServerResponse result;
     ApplicationData::Ptr app_data = ApplicationData::instance();
-    std::string channelName = m_message.messageBnf.arguments[0];
-    std::string userNick = m_message.m_from->getNick();
 
     if (m_message.messageBnf.arguments.size() == 1)
         return ft::nullopt;
@@ -37,6 +35,9 @@ ft::optional<ServerResponse> ModeCommand::exec() {
         result.m_replies.push_back(Message("461 " + m_message.m_from->getNick() + " MODE :Not enough parameters", m_message.m_from));
         return result;
     }
+
+    std::string channelName = m_message.messageBnf.arguments[0];
+    std::string userNick = m_message.m_from->getNick();
 
     // Check first arg is a channel
     if (!ft::is_channel(channelName)) {
@@ -61,16 +62,16 @@ ft::optional<ServerResponse> ModeCommand::exec() {
     }
 
     // Check user we want affect mode exist on the server
-    ft::optional<User::Ptr> user_opt = app_data->getUserByNick(m_message.messageBnf.arguments[1]);
+    ft::optional<User::Ptr> user_opt = app_data->getUserByNick(m_message.messageBnf.arguments[2]);
     if (!user_opt.has_value()) {
-        std::string non_existed_nick = m_message.messageBnf.arguments[1];
+        std::string non_existed_nick = m_message.messageBnf.arguments[2];
         result.m_replies.push_back(Message("401 " + userNick + " " + non_existed_nick + " :No such nick", m_message.m_from));
         return result;
     }
 
     // Check user we want affect mode exist on the channel
-    if (!channel->isUserAvailable(*user_opt)) {
-        std::string non_existed_nick = m_message.messageBnf.arguments[1];
+    if (!channel->isUserAvailable(*user_opt) && !channel->isBanned(*user_opt)) {
+        std::string non_existed_nick = m_message.messageBnf.arguments[2];
         result.m_replies.push_back(Message("401 " + userNick + " " + non_existed_nick + " :No such nick", m_message.m_from));
         return result;
     }
@@ -94,14 +95,6 @@ ft::optional<Message> ModeCommand::handleMode() {
     bool isAppendMode = (modeChar == '+');
 
     char mode = m_message.messageBnf.arguments[1][1];
-
-    // Check user we want to affect mode on the channel
-    if (!channel->isUserAvailable(userArg)) {
-        // TODO: Error: User not exist on the channel, but if we are not try to remove user from ban list
-        if (modeChar != '-' && mode != 'b') {
-            return result;
-        }
-    }
 
     switch (mode) {
         case 'b':

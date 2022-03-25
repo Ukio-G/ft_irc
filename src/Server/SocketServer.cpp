@@ -12,8 +12,8 @@
 
 SocketServer::SocketServer(unsigned short port, int max_clients) :
         m_port(port),
-        m_max_clients(max_clients),
-        m_running(true)
+        m_running(true),
+        m_max_clients(max_clients)
 {
     bzero(m_in_buffer, BUFFER_SIZE);
 
@@ -28,7 +28,7 @@ SocketServer::SocketServer(unsigned short port, int max_clients) :
 
     m_addr.sin_family = AF_INET;
     m_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    m_addr.sin_port = htons(port);
+    m_addr.sin_port = htons(m_port);
 
     int bind_result = bind(m_sock_fd, (sockaddr*)&m_addr, sizeof(m_addr));
     if (bind_result < 0)
@@ -57,6 +57,8 @@ void SocketServer::handleNewTcpConnection() {
         pollfd pfd = {new_connfd, POLLRDNORM, 0};
 
         ApplicationData::instance()->users[new_connfd] = User::Ptr(new User(new_connfd));
+
+        // Update host from user connect
         ApplicationData::instance()->users[new_connfd]->setHost(inet_ntoa(m_addr.sin_addr));
 
         m_pollfds.push_back(pfd);
@@ -93,10 +95,8 @@ ReadResult SocketServer::readFromClient(int sockfd, bool auto_close) {
 
 /**
  * Handle all established TCP connections.
- *
- * @param connections - how many connections poll functions return.
  */
-void SocketServer::handleExistingTcpConnection(int connections) {
+void SocketServer::handleExistingTcpConnection(int) {
     ApplicationData::Ptr appdata = ApplicationData::instance();
     for (pollIt it = m_pollfds.begin() + 1; it != m_pollfds.end(); ) {
         if (it->revents & POLLRDNORM) {
@@ -157,7 +157,7 @@ void SocketServer::handleIncomingData(int conn_fd) {
 
     std::vector<std::string> raw_commands = ft::split(str_buffer, delimiter);
 
-    for (int i = 0; i < raw_commands.size(); ++i) {
+    for (size_t i = 0; i < raw_commands.size(); ++i) {
         if (raw_commands[i].empty())
             continue;
         Message msg(raw_commands[i], User::Ptr(0), appdata->users[conn_fd]);
@@ -172,14 +172,14 @@ void SocketServer::stop() {
 }
 
 void SocketServer::CloseAllConnection() {
-    for (int i = 1; i < m_pollfds.size(); ++i) {
+    for (size_t i = 1; i < m_pollfds.size(); ++i) {
         close(m_pollfds[i].fd);
     }
     close(m_pollfds[0].fd);
 }
 
 void SocketServer::Write(const ServerResponse & response) {
-    for (int i = 0; i < response.m_replies.size(); ++i) {
+    for (size_t i = 0; i < response.m_replies.size(); ++i) {
         Write(response.m_replies[i]);
     }
 }
@@ -218,7 +218,7 @@ void SocketServer::userDisconnected(SocketServer::pollIt & iterator) {
     User::Ptr user = appdata->users[iterator->fd];
     // Clean channels
     std::vector<IRCChannel::Ptr> channels = appdata->userChannels(user);
-    for (int i = 0; i < channels.size(); ++i) {
+    for (size_t i = 0; i < channels.size(); ++i) {
         channels[i]->removeUser(user);
     }
 
@@ -244,7 +244,7 @@ void SocketServer::appendToDisconnectQueue(int sockfd) {
 void SocketServer::disconnectUsersInQueue() {
     ApplicationData::Ptr appdata = ApplicationData::instance();
 
-    for (int i = 0; i < m_disconnectQueue.size(); ++i) {
+    for (size_t i = 0; i < m_disconnectQueue.size(); ++i) {
         User::Ptr user = appdata->users[m_disconnectQueue[i]];
         disconnectUser(user);
     }

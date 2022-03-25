@@ -5,7 +5,7 @@
 
 ServerStatus::ServerStatus() {}
 
-ServerStatus::ServerStatus(const ServerStatus &other) {}
+ServerStatus::ServerStatus(const ServerStatus &) {}
 
 ServerStatus &ServerStatus::operator=(const ServerStatus &other) {
     if (&other == this)
@@ -46,17 +46,7 @@ Message ServerStatus::rpl_luserop(User::Ptr to) {
     ApplicationData::Ptr app_data = ApplicationData::instance();
     std::string server_name = app_data->serverName;
     int operators = 0;
-
-    typedef std::map<int, User::Ptr>::iterator uIt;
-
-
-    //TODO: Fix inf. loop
-//    for (uIt it = app_data->users.begin() ; it != app_data->users.end(); ) {
-//        if (it->second->isOperator())
-//            operators++;
-//    }
-
-    Message msg("252 " + to->getNick() + " " + ft::to_string(operators)+ " :operator(s) online", to);
+    Message msg("252 " + to->getNick() + " " + ft::to_string(operators) + " :operator(s) online", to);
     return msg;
 }
 

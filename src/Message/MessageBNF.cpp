@@ -21,7 +21,7 @@ MessageBNF::operator std::string() const{
         result += prefix + " ";
     if (!command.empty())
         result += command;
-    for (int i = 0; i < arguments.size(); ++i)
+    for (size_t i = 0; i < arguments.size(); ++i)
         result += (" " + arguments[i]);
     result += terminator;
     return result;

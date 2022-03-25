@@ -75,8 +75,6 @@ ft::optional<ServerResponse> UserCommand::exec() {
     user->setUserName(user_name);
     user->setRealName(real_name);
 
-    const std::string & nick = user->getNick();
-
     // Check authorized. If false - password was incorrect => interrupt login and disconnect
     if (!user->isAuthorized()) {
         result.m_replies.push_back(Message("464 * :Password incorrect", user));

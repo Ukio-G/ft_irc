@@ -26,7 +26,7 @@ ft::optional<ServerResponse> NoticeCommand::exec() {
     PrivmsgCommand priv(m_message);
     ft::optional<ServerResponse> result = priv.exec();
     if (result)
-        for (int i = 0; (*result).m_replies.size() > i; i++)
+        for (size_t i = 0; (*result).m_replies.size() > i; i++)
             (*result).m_replies[i].messageBnf.command = "NOTICE";
     return result;
 }

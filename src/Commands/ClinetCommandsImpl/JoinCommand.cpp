@@ -26,6 +26,11 @@ ft::optional<ServerResponse> JoinCommand::exec() {
         return response;
     }
 
+    if (m_message.messageBnf.arguments[0][0] != '#') {
+        response.m_replies.push_back(Message("403 " + m_message.m_from->getNick() + " " + m_message.messageBnf.arguments[0] + " :No such channel", m_message.m_from));
+        return response;
+    }
+
     std::string channelName = m_message.messageBnf.arguments[0].substr(1, m_message.messageBnf.arguments[0].size() - 1);
 
     // Maybe we are created channel? Or connecting to existed

@@ -27,7 +27,7 @@ Message PrivmsgCommand::messageToUser(const std::string & receiverUser) {
 
     std::string msg_str = "PRIVMSG " + receiverUser + " ";
 
-    for (int i = 1; i < m_message.messageBnf.arguments.size(); ++i)
+    for (size_t i = 1; i < m_message.messageBnf.arguments.size(); ++i)
         msg_str += m_message.messageBnf.arguments[i] + " ";
 
     Message msg( msg_str, *to_opt, m_message.m_from);
@@ -54,7 +54,7 @@ std::vector<Message> PrivmsgCommand::messageToChannel(const std::string & receiv
 
     std::string msg_str = "PRIVMSG #" + channel + " ";
 
-    for (int i = 1; i < m_message.messageBnf.arguments.size(); ++i)
+    for (size_t i = 1; i < m_message.messageBnf.arguments.size(); ++i)
         msg_str += m_message.messageBnf.arguments[i] + " ";
 
     result = channelIt->second->generateMessage(msg_str, m_message.m_from, true);
@@ -75,7 +75,7 @@ ft::optional<ServerResponse> PrivmsgCommand::exec() {
 
     std::vector<std::string> receivers = ft::split(m_message.messageBnf.arguments[0], ',');
 
-    for (int i = 0; i < receivers.size(); ++i) {
+    for (size_t i = 0; i < receivers.size(); ++i) {
         bool toChannel = receivers[i][0] == '#';
         if (toChannel) {
             std::vector<Message> messages = messageToChannel(receivers[i]);

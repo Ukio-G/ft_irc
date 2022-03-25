@@ -17,7 +17,7 @@
 
 CommandFactory::CommandFactory() {}
 
-CommandFactory::CommandFactory(const CommandFactory &other) {}
+CommandFactory::CommandFactory(const CommandFactory &) {}
 
 CommandFactory::~CommandFactory() {}
 

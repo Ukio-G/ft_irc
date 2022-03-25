@@ -29,12 +29,10 @@ ft::optional<ServerResponse> QuitCommand::exec() {
     std::vector<IRCChannel::Ptr> channels = ApplicationData::userChannels(m_message.m_from);
     std::string quitMessage = "QUIT :Quit: Quit";
 
-    for (int i = 0; i < channels.size(); ++i) {
+    for (size_t i = 0; i < channels.size(); ++i) {
         std::vector<Message> messages = channels[i]->generateMessage(quitMessage, m_message.m_from, true);
         response.m_replies.insert(response.m_replies.end(), messages.begin(), messages.end());
     }
-//    quitMessage += "\x0d\x0a";
-//    quitMessage += "ERROR :Quit: Quit";
 
     response.m_replies.push_back(Message(quitMessage, m_message.m_from, m_message.m_from));
     response.m_replies.push_back(Message("ERROR :Quit: Quit", m_message.m_from));
