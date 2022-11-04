@@ -104,6 +104,7 @@ void SocketServer::handleExistingTcpConnection(int) {
             if (readFromClient(it->fd, false) != RR_Ok) {
                 std::cout << "Client " << appdata->users[it->fd]->generateFullUsername() << " disconnected" << std::endl;
                 disconnectUser(appdata->users[it->fd]);
+                it++;
                 continue;
             }
             handleIncomingData(it->fd);
